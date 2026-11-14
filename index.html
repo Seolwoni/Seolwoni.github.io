@@ -220,7 +220,7 @@ const PACKS = [
     needsNote: "Fabric · NeoForge",
     frames: "인벤토리 32프레임 · 핫바 48프레임",
     credit: "배경 이미지 원작자 표기 필요",
-    download: "",
+    download: "https://seolwoni.github.io/packs/Seolwoni_Catgirl_Furina_Animated_Inventory.zip",
     added: "2026-11-14",
     draft: false
   },
@@ -238,7 +238,7 @@ const PACKS = [
     needsNote: "Fabric · NeoForge",
     frames: "인벤토리 32프레임 · 핫바 48프레임",
     credit: "배경 이미지 원작자 표기 필요",
-    download: "",
+    download: "https://seolwoni.github.io/packs/Seolwoni_Winter_Furina_Animated_Inventory.zip",
     added: "2026-11-15",
     draft: false
   },
@@ -256,7 +256,7 @@ const PACKS = [
     needsNote: "Fabric · NeoForge",
     frames: "인벤토리 43프레임 · 핫바 24프레임",
     credit: "배경 이미지 원작자 표기 필요",
-    download: "",
+    download: "https://seolwoni.github.io/packs/Seolwoni_Takanashi_Hoshino_Animated_Inventory.zip",
     added: "2026-11-15",
     draft: false
   }
@@ -270,7 +270,7 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 
 function dlButton(p, cls) {
   return p.download
-    ? `<a class="btn primary ${cls || ""}" href="${esc(p.download)}" target="_blank" rel="noopener">Download</a>`
+    ? `<a class="btn primary ${cls || ""}" href="${esc(p.download)}" download target="_blank" rel="noopener">Download</a>`
     : `<span class="btn primary" aria-disabled="true">링크 준비 중</span>`;
 }
 
