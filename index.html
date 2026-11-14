@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seolwoni Pack Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=IBM+Plex+Sans+KR:wght@400;500;700&family=Silkscreen&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Winter library: pale sky ground, scarf-navy ink, cream + lavender accents (from the profile character). Cards on a quiet grid, one navy action per card. */
+  --sky: #dcebf8;
+  --sky-deep: #b9d3ee;
+  --paper: #f8fbff;
+  --navy: #2c3d6b;
+  --ink-soft: #5b6a92;
+  --lavender: #8d7fd6;
+  --cream: #fcf6e0;
+  --blush: #ef9aa6;
+  --line: #c7d7ee;
+  --font-display: "Jua", "IBM Plex Sans KR", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+  --font-pixel: "Silkscreen", ui-monospace, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--sky);
+  background-image:
+    radial-gradient(circle, rgba(120,160,215,.35) 1.6px, transparent 1.8px),
+    linear-gradient(180deg, var(--sky) 0%, var(--sky-deep) 100%);
+  background-size: 22px 22px, 100% 100%;
+  background-attachment: fixed;
+  color: var(--navy);
+  font-family: var(--font-body);
+  line-height: 1.55;
+}
+a { color: inherit; }
+img { max-width: 100%; display: block; image-rendering: auto; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+
+/* header */
+header { padding: 40px 0 24px; }
+.profile { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+.avatar {
+  width: 112px; height: 112px; border-radius: 50%; flex: none;
+  padding: 6px; background: var(--paper);
+  box-shadow: 0 0 0 3px var(--line), 0 10px 30px rgba(44,61,107,.18);
+}
+.avatar img { width: 100%; height: 100%; border-radius: 50%; }
+.who h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(30px, 5vw, 42px); margin: 0; line-height: 1.15; text-wrap: balance; }
+.who h1 span { color: var(--lavender); }
+.who p { margin: 6px 0 0; color: var(--ink-soft); max-width: 60ch; }
+.stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.stat { font-family: var(--font-pixel); font-size: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 3px 9px; font-variant-numeric: tabular-nums; }
+
+/* toolbar */
+.toolbar {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  padding: 12px 0; margin-bottom: 8px;
+  background: linear-gradient(180deg, var(--sky) 70%, rgba(220,235,248,0));
+}
+.search { flex: 1 1 220px; position: relative; }
+.search input {
+  width: 100%; font: inherit; color: var(--navy);
+  padding: 10px 14px 10px 38px; border-radius: 12px;
+  border: 1.5px solid var(--line); background: var(--paper);
+}
+.search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  font: 500 14px var(--font-body); color: var(--navy);
+  border: 1.5px solid var(--line); background: var(--paper);
+  padding: 7px 13px; border-radius: 999px; cursor: pointer;
+}
+.chip[aria-pressed="true"] { background: var(--navy); color: var(--cream); border-color: var(--navy); }
+input:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid var(--lavender); outline-offset: 2px; }
+
+/* grid */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding-bottom: 28px; }
+.card {
+  background: var(--paper); border-radius: 18px; overflow: hidden;
+  border: 1.5px solid var(--line);
+  box-shadow: 0 8px 24px rgba(44,61,107,.10);
+  display: flex; flex-direction: column;
+}
+.preview { background: #3a4250; padding: 14px; display: grid; gap: 10px; cursor: zoom-in; }
+.preview .inv { aspect-ratio: 176 / 166; width: 100%; object-fit: contain; }
+.preview .hud { width: 100%; }
+.body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.card h2 { font-family: var(--font-display); font-weight: 400; font-size: 22px; margin: 0; line-height: 1.2; text-wrap: balance; }
+.ver { font-family: var(--font-pixel); font-size: 11px; color: var(--ink-soft); white-space: nowrap; }
+.desc { margin: 0; color: var(--ink-soft); font-size: 14px; }
+.tags { display: flex; gap: 5px; flex-wrap: wrap; }
+.tag { font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 6px; background: #e8eefb; color: var(--navy); }
+.tag.anim { background: #ece8fb; color: #5a4cb0; }
+.draft { font-size: 12px; color: #a0526a; background: #fde9ec; padding: 2px 8px; border-radius: 6px; align-self: flex-start; }
+.actions { display: flex; gap: 8px; margin-top: auto; padding-top: 6px; }
+.btn {
+  flex: 1; text-align: center; text-decoration: none; cursor: pointer;
+  font: 700 15px var(--font-body); padding: 10px 12px; border-radius: 12px;
+  border: 1.5px solid var(--navy);
+}
+.btn.primary { background: var(--navy); color: var(--cream); }
+.btn.ghost { background: transparent; color: var(--navy); }
+.btn[aria-disabled="true"] { background: #e3e9f4; border-color: #e3e9f4; color: var(--ink-soft); cursor: default; }
+.mod { align-self: flex-start; font-size: 13px; font-weight: 700; color: #5a4cb0; background: #ece8fb; border: 1.5px solid #d6cff5; padding: 4px 10px; border-radius: 8px; text-decoration: none; }
+.mod::after { content: " ↗"; }
+.empty { text-align: center; padding: 40px 0; color: var(--ink-soft); grid-column: 1 / -1; }
+
+/* info sections */
+.info { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding-bottom: 40px; }
+.panel { background: var(--paper); border: 1.5px solid var(--line); border-radius: 18px; padding: 18px 20px; }
+.panel h3 { font-family: var(--font-display); font-weight: 400; font-size: 21px; margin: 0 0 8px; }
+.panel ol, .panel ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14.5px; }
+.panel p { font-size: 14.5px; margin: 0 0 8px; }
+code { font-family: var(--font-pixel); font-size: 12px; background: #e8eefb; padding: 1px 5px; border-radius: 4px; }
+footer { text-align: center; color: var(--ink-soft); font-size: 13px; padding: 0 0 36px; }
+
+/* detail dialog */
+dialog {
+  border: none; padding: 0; border-radius: 20px; width: min(760px, calc(100% - 32px));
+  background: var(--paper); color: var(--navy);
+  box-shadow: 0 24px 60px rgba(20,30,60,.35);
+}
+dialog::backdrop { background: rgba(30,42,80,.45); }
+.d-media { background: #3a4250; padding: 18px; display: grid; gap: 12px; }
+.d-media .inv { max-width: 460px; width: 100%; margin: 0 auto; }
+.d-body { padding: 18px 22px 22px; display: grid; gap: 12px; }
+.d-body h2 { font-family: var(--font-display); font-weight: 400; font-size: 28px; margin: 0; }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 0; font-size: 14.5px; }
+dt { color: var(--ink-soft); }
+dd { margin: 0; }
+.close { position: absolute; top: 10px; right: 10px; width: 38px; height: 38px; border-radius: 50%; border: none; background: var(--paper); color: var(--navy); font-size: 20px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+
+@media (max-width: 420px) {
+  .grid { grid-template-columns: 1fr; }
+  .avatar { width: 88px; height: 88px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="profile">
+    <div class="avatar"><img src="assets/avatar.webp" alt="Seolwoni profile character"></div>
+    <div class="who">
+      <h1>Seolwoni <span>Pack Library</span></h1>
+      <p>마인크래프트 인벤토리 · 핫바 리소스팩 아카이브예요. Minecraft inventory &amp; hotbar resource packs, all free.</p>
+      <div class="stats" id="stats"></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="toolbar">
+    <label class="search" for="q">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5b6a92" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <input id="q" type="search" placeholder="팩 이름 검색 · Search packs" autocomplete="off">
+    </label>
+    <div class="chips" id="chips" role="group" aria-label="Filter by type"></div>
+  </div>
+
+  <section class="grid" id="grid" aria-live="polite"></section>
+
+  <section class="info">
+    <div class="panel">
+      <h3>설치 방법 · How to install</h3>
+      <ol>
+        <li><strong>필수 모드</strong>: <a href="https://modrinth.com/mod/animaticarefabricated" target="_blank" rel="noopener">Animatica Refabricated</a>를 설치해요. Fabric 또는 NeoForge용이에요. 이 모드가 있어야 인벤토리가 움직여요.</li>
+        <li>팩의 Download로 <code>.zip</code> 파일을 받아요. 압축은 풀지 마세요.</li>
+        <li>마인크래프트 Options → Resource Packs → Open Pack Folder</li>
+        <li>폴더에 zip을 넣고, 팩을 오른쪽 목록으로 옮긴 뒤 Done.</li>
+        <li>Required mod: Animatica Refabricated (Fabric / NeoForge). Without it the inventory stays still.</li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>출처 · 삭제 요청 · Credits</h3>
+      <p>일부 팩 배경에는 다른 작가님의 이미지가 들어 있어요. 출처는 각 팩의 상세 정보에 적어 두었어요.</p>
+      <p>원작자이시고 내려주길 원하시면 인스타그램 DM으로 알려주세요. 확인하는 대로 바로 삭제할게요.</p>
+      <p>If you are the original artist and want something removed, DM me on Instagram and it will be taken down right away.</p>
+    </div>
+    <div class="panel">
+      <h3>이용 안내 · Terms</h3>
+      <ul>
+        <li>개인 플레이, 영상·방송 사용 자유예요.</li>
+        <li>재업로드, 판매, 내 작품이라고 하는 건 안 돼요.</li>
+        <li>Free for personal use and videos. No reuploads or selling.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer>made by Seolwoni ❄</footer>
+
+<dialog id="detail" aria-labelledby="d-title">
+  <button class="close" id="close" aria-label="Close">×</button>
+  <div class="d-media" id="d-media"></div>
+  <div class="d-body" id="d-body"></div>
+</dialog>
+
+<script>
+/* ===== Pack data: add a new pack by copying one block ===== */
+const PACKS = [
+  {
+    id: "catgirl-furina",
+    name: "Catgirl Furina",
+    desc: "고양이 귀 푸리나 배경의 움직이는 인벤토리. 핫바, 체력·배고픔·갑옷, 경험치 바, 상자·화로·제작대 등 컨테이너 GUI까지 전부 바뀌어요.",
+    inv: "assets/furina_inv.webp",
+    hud: "assets/furina_hud.webp",
+    tags: ["Animated", "Inventory", "Hotbar", "HUD", "Containers"],
+    version: "Java 1.21 – 26.3",
+    format: "pack_format 34+",
+    needs: "Animatica Refabricated",
+    needsUrl: "https://modrinth.com/mod/animaticarefabricated",
+    needsNote: "Fabric · NeoForge",
+    frames: "인벤토리 32프레임 · 핫바 48프레임",
+    credit: "배경 이미지 원작자 표기 필요",
+    download: "",
+    added: "2026-11-14",
+    draft: false
+  },
+  {
+    id: "pastel-axolotl",
+    name: "Pastel Axolotl",
+    desc: "하늘색 우파루파 소녀 배경 인벤토리와 물방울 핫바. 하트·배고픔 아이콘도 파스텔 톤으로 맞췄어요.",
+    inv: "assets/axolotl_inv.webp",
+    hud: "assets/axolotl_hud.webp",
+    tags: ["Animated", "Inventory", "Hotbar", "HUD"],
+    version: "Java",
+    format: "",
+    needs: "Animatica Refabricated",
+    needsUrl: "https://modrinth.com/mod/animaticarefabricated",
+    needsNote: "Fabric · NeoForge",
+    frames: "",
+    credit: "배경 이미지 원작자 표기 필요",
+    download: "",
+    added: "2026-11-14",
+    draft: true
+  },
+  {
+    id: "pink-dreamy",
+    name: "Pink Dreamy",
+    desc: "분홍빛 소녀 배경 인벤토리와 졸린 Z가 떠다니는 라벤더 핫바.",
+    inv: "assets/pink_inv.webp",
+    hud: "assets/pink_hud.webp",
+    tags: ["Animated", "Inventory", "Hotbar", "HUD"],
+    version: "Java",
+    format: "",
+    needs: "Animatica Refabricated",
+    needsUrl: "https://modrinth.com/mod/animaticarefabricated",
+    needsNote: "Fabric · NeoForge",
+    frames: "",
+    credit: "배경 이미지 원작자 표기 필요",
+    download: "",
+    added: "2026-11-14",
+    draft: true
+  }
+];
+/* ========================================================= */
+
+const FILTERS = ["All", "Animated", "Inventory", "Hotbar", "HUD", "Containers"];
+let active = "All";
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function dlButton(p, cls) {
+  return p.download
+    ? `<a class="btn primary ${cls || ""}" href="${esc(p.download)}" target="_blank" rel="noopener">Download</a>`
+    : `<span class="btn primary" aria-disabled="true">링크 준비 중</span>`;
+}
+
+function renderStats() {
+  const anim = PACKS.filter((p) => p.tags.includes("Animated")).length;
+  $("#stats").innerHTML = `<span class="stat">${PACKS.length} PACKS</span><span class="stat">${anim} ANIMATED</span><span class="stat">FREE</span>`;
+}
+
+function renderChips() {
+  $("#chips").innerHTML = FILTERS.map((f) =>
+    `<button class="chip" type="button" data-f="${f}" aria-pressed="${f === active}">${f}</button>`).join("");
+}
+
+function renderGrid() {
+  const q = $("#q").value.trim().toLowerCase();
+  const list = PACKS.filter((p) =>
+    (active === "All" || p.tags.includes(active)) &&
+    (!q || (p.name + " " + p.desc + " " + p.tags.join(" ")).toLowerCase().includes(q)));
+  $("#grid").innerHTML = list.length ? list.map((p) => `
+    <article class="card">
+      <div class="preview" data-open="${p.id}" role="button" tabindex="0" aria-label="${esc(p.name)} 자세히 보기">
+        <img class="inv" src="${p.inv}" alt="${esc(p.name)} inventory preview" loading="lazy">
+        <img class="hud" src="${p.hud}" alt="${esc(p.name)} hotbar preview" loading="lazy">
+      </div>
+      <div class="body">
+        <div class="title-row"><h2>${esc(p.name)}</h2><span class="ver">${esc(p.version)}</span></div>
+        ${p.draft ? `<span class="draft">이름 · 정보 정리 중</span>` : ""}
+        <p class="desc">${esc(p.desc)}</p>
+        <div class="tags">${p.tags.map((t) => `<span class="tag ${t === "Animated" ? "anim" : ""}">${t}</span>`).join("")}</div>
+        ${p.needs ? `<a class="mod" href="${esc(p.needsUrl)}" target="_blank" rel="noopener">필수 모드 · ${esc(p.needs)}</a>` : ""}
+        <div class="actions">${dlButton(p)}<button class="btn ghost" type="button" data-open="${p.id}">Details</button></div>
+      </div>
+    </article>`).join("") : `<p class="empty">검색 결과가 없어요. No packs match.</p>`;
+}
+
+function openDetail(id, push) {
+  const p = PACKS.find((x) => x.id === id);
+  if (!p) return;
+  $("#d-media").innerHTML = `<img class="inv" src="${p.inv}" alt="${esc(p.name)} inventory"><img src="${p.hud}" alt="${esc(p.name)} hotbar">`;
+  const rows = [["Version", [p.version, p.format].filter(Boolean).join(" · ")], ["Animation", p.frames], ["Credits", p.credit], ["Added", p.added]]
+    .filter((r) => r[1]).map((r) => `<dt>${r[0]}</dt><dd>${esc(r[1])}</dd>`).join("");
+  const req = p.needs ? `<dt>필수 모드</dt><dd><a href="${esc(p.needsUrl)}" target="_blank" rel="noopener">${esc(p.needs)}</a>${p.needsNote ? ` · ${esc(p.needsNote)}` : ""}</dd>` : "";
+  $("#d-body").innerHTML = `<h2 id="d-title">${esc(p.name)}</h2><p class="desc">${esc(p.desc)}</p>
+    <div class="tags">${p.tags.map((t) => `<span class="tag ${t === "Animated" ? "anim" : ""}">${t}</span>`).join("")}</div>
+    <dl>${req}${rows}</dl><div class="actions">${dlButton(p)}</div>`;
+  const d = $("#detail");
+  if (!d.open) d.showModal();
+  if (push && location.hash !== "#" + id) location.hash = id;
+}
+function closeDetail() {
+  const d = $("#detail");
+  if (d.open) d.close();
+}
+
+document.addEventListener("click", (e) => {
+  const c = e.target.closest(".chip");
+  if (c) { active = c.dataset.f; renderChips(); renderGrid(); return; }
+  const o = e.target.closest("[data-open]");
+  if (o) openDetail(o.dataset.open, true);
+});
+document.addEventListener("keydown", (e) => {
+  const o = e.target.closest && e.target.closest(".preview[data-open]");
+  if (o && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openDetail(o.dataset.open, true); }
+});
+$("#q").addEventListener("input", renderGrid);
+$("#close").addEventListener("click", closeDetail);
+$("#detail").addEventListener("click", (e) => { if (e.target.id === "detail") closeDetail(); });
+$("#detail").addEventListener("close", () => { if (location.hash) history.replaceState(null, "", location.pathname + location.search); });
+window.addEventListener("hashchange", () => { const id = location.hash.slice(1); id ? openDetail(id, false) : closeDetail(); });
+
+renderStats(); renderChips(); renderGrid();
+if (location.hash.length > 1) openDetail(location.hash.slice(1), false);
+</script>
+</body>
+</html>
