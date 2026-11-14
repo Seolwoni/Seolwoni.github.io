@@ -263,6 +263,7 @@ const PACKS = [
 ];
 /* ========================================================= */
 
+const ON_SITE = location.hostname.endsWith("github.io");
 const FILTERS = ["All", "Animated", "Inventory", "Hotbar", "HUD", "Containers"];
 let active = "All";
 const $ = (s) => document.querySelector(s);
@@ -270,7 +271,7 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 
 function dlButton(p, cls) {
   return p.download
-    ? `<a class="btn primary ${cls || ""}" href="${esc(p.download)}" download target="_blank" rel="noopener">Download</a>`
+    ? `<a class="btn primary ${cls || ""}" href="${esc(p.download)}" ${ON_SITE ? "download" : 'target="_blank" rel="noopener"'}>Download</a>`
     : `<span class="btn primary" aria-disabled="true">링크 준비 중</span>`;
 }
 
