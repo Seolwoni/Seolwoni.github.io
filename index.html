@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -150,7 +150,7 @@ dd { margin: 0; }
     <div class="avatar"><img src="assets/avatar.webp" alt="Seolwoni profile character"></div>
     <div class="who">
       <h1>Seolwoni <span>Pack Library</span></h1>
-      <p>마인크래프트 인벤토리 · 핫바 리소스팩 아카이브예요. Minecraft inventory &amp; hotbar resource packs, all free.</p>
+      <p>Animated inventory &amp; hotbar resource packs for Minecraft Java. All free.</p>
       <div class="stats" id="stats"></div>
     </div>
   </div>
@@ -160,7 +160,7 @@ dd { margin: 0; }
   <div class="toolbar">
     <label class="search" for="q">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5b6a92" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
-      <input id="q" type="search" placeholder="팩 이름 검색 · Search packs" autocomplete="off">
+      <input id="q" type="search" placeholder="Search packs" autocomplete="off">
     </label>
     <div class="chips" id="chips" role="group" aria-label="Filter by type"></div>
   </div>
@@ -169,27 +169,24 @@ dd { margin: 0; }
 
   <section class="info">
     <div class="panel">
-      <h3>설치 방법 · How to install</h3>
+      <h3>How to install</h3>
       <ol>
-        <li><strong>필수 모드</strong>: <a href="https://modrinth.com/mod/animaticarefabricated" target="_blank" rel="noopener">Animatica Refabricated</a>를 설치해요. Fabric 또는 NeoForge용이에요. 이 모드가 있어야 인벤토리가 움직여요.</li>
-        <li>팩의 Download로 <code>.zip</code> 파일을 받아요. 압축은 풀지 마세요.</li>
-        <li>마인크래프트 Options → Resource Packs → Open Pack Folder</li>
-        <li>폴더에 zip을 넣고, 팩을 오른쪽 목록으로 옮긴 뒤 Done.</li>
-        <li>Required mod: Animatica Refabricated (Fabric / NeoForge). Without it the inventory stays still.</li>
+        <li><strong>Install the required mod</strong>: <a href="https://modrinth.com/mod/animaticarefabricated" target="_blank" rel="noopener">Animatica Refabricated</a> (Fabric or NeoForge). The inventory only animates with this mod.</li>
+        <li>Click Download to get the <code>.zip</code> file. Don't unzip it.</li>
+        <li>In Minecraft, go to Options → Resource Packs → Open Pack Folder.</li>
+        <li>Drop the zip into the folder, move the pack to the right-hand list, then click Done.</li>
       </ol>
     </div>
     <div class="panel">
-      <h3>출처 · 삭제 요청 · Credits</h3>
-      <p>일부 팩 배경에는 다른 작가님의 이미지가 들어 있어요. 출처는 각 팩의 상세 정보에 적어 두었어요.</p>
-      <p>원작자이시고 내려주길 원하시면 인스타그램 DM으로 알려주세요. 확인하는 대로 바로 삭제할게요.</p>
+      <h3>Credits &amp; removal requests</h3>
+      <p>Some pack backgrounds use artwork by other artists. Credits are listed in each pack's details.</p>
       <p>If you are the original artist and want something removed, DM me on Instagram and it will be taken down right away.</p>
     </div>
     <div class="panel">
-      <h3>이용 안내 · Terms</h3>
+      <h3>Terms of use</h3>
       <ul>
-        <li>개인 플레이, 영상·방송 사용 자유예요.</li>
-        <li>재업로드, 판매, 내 작품이라고 하는 건 안 돼요.</li>
-        <li>Free for personal use and videos. No reuploads or selling.</li>
+        <li>Free to use for personal play, videos and streams.</li>
+        <li>Don't reupload, sell, or claim the packs as your own.</li>
       </ul>
     </div>
   </section>
@@ -209,7 +206,7 @@ const PACKS = [
   {
     id: "catgirl-furina",
     name: "Catgirl Furina",
-    desc: "고양이 귀 푸리나 배경의 움직이는 인벤토리. 핫바, 체력·배고픔·갑옷, 경험치 바, 상자·화로·제작대 등 컨테이너 GUI까지 전부 바뀌어요.",
+    desc: "An animated inventory with catgirl Furina in the background. The hotbar, hearts, hunger, armor, XP bar and container screens like the chest, furnace and crafting table are all restyled.",
     inv: "assets/furina_inv.webp",
     hud: "assets/furina_hud.webp",
     tags: ["Animated", "Inventory", "Hotbar", "HUD", "Containers"],
@@ -218,8 +215,8 @@ const PACKS = [
     needs: "Animatica Refabricated",
     needsUrl: "https://modrinth.com/mod/animaticarefabricated",
     needsNote: "Fabric · NeoForge",
-    frames: "인벤토리 32프레임 · 핫바 48프레임",
-    credit: "배경 이미지 원작자 표기 필요",
+    frames: "Inventory 32 frames · Hotbar 48 frames",
+    credit: "Background artwork by its original artist",
     download: "https://seolwoni.github.io/packs/Seolwoni_Catgirl_Furina_Animated_Inventory.zip",
     added: "2026-11-14",
     draft: false
@@ -227,7 +224,7 @@ const PACKS = [
   {
     id: "winter-furina",
     name: "Winter Furina",
-    desc: "눈 내리는 밤 가로등 아래, 빨간 목도리를 두른 푸리나 배경의 움직이는 인벤토리. 눈송이가 내리는 밤하늘 핫바와 빨간 하트·HUD, 상자·화로·제작대 등 컨테이너 GUI까지 바뀌어요.",
+    desc: "An animated inventory with Furina in a red scarf under a streetlight on a snowy night. Comes with a starry night hotbar with falling snow, red hearts and HUD, plus restyled chest, furnace and crafting table screens.",
     inv: "assets/winter_inv.webp",
     hud: "assets/winter_hud.webp",
     tags: ["Animated", "Inventory", "Hotbar", "HUD", "Containers"],
@@ -236,8 +233,8 @@ const PACKS = [
     needs: "Animatica Refabricated",
     needsUrl: "https://modrinth.com/mod/animaticarefabricated",
     needsNote: "Fabric · NeoForge",
-    frames: "인벤토리 32프레임 · 핫바 48프레임",
-    credit: "배경 이미지 원작자 표기 필요",
+    frames: "Inventory 32 frames · Hotbar 48 frames",
+    credit: "Background artwork by its original artist",
     download: "https://seolwoni.github.io/packs/Seolwoni_Winter_Furina_Animated_Inventory.zip",
     added: "2026-11-15",
     draft: false
@@ -245,7 +242,7 @@ const PACKS = [
   {
     id: "hu-tao",
     name: "Hu Tao",
-    desc: "반딧불이 날아다니는 밤 꽃밭, 호두와 부츠 유령 배경의 움직이는 인벤토리. 꽃잎이 흩날리는 핫바, 금빛 꽃 장식 하트와 부츠 유령 허기 아이콘, 매화가 그려진 상자·화로·제작대 GUI까지 바뀌어요.",
+    desc: "An animated inventory with Hu Tao and Boo Tao in a flower field at night, with fireflies drifting by. Comes with a hotbar with falling petals, gold-trimmed hearts, Boo Tao hunger icons, and plum blossom chest, furnace and crafting table screens.",
     inv: "assets/hutao_inv.webp",
     hud: "assets/hutao_hud.webp",
     tags: ["Animated", "Inventory", "Hotbar", "HUD", "Containers"],
@@ -254,8 +251,8 @@ const PACKS = [
     needs: "Animatica Refabricated",
     needsUrl: "https://modrinth.com/mod/animaticarefabricated",
     needsNote: "Fabric · NeoForge",
-    frames: "인벤토리 32프레임 · 핫바 48프레임",
-    credit: "배경 이미지 원작자 표기 필요",
+    frames: "Inventory 32 frames · Hotbar 48 frames",
+    credit: "Background artwork by its original artist",
     download: "https://seolwoni.github.io/packs/Seolwoni_Hu_Tao_Animated_Inventory.zip",
     added: "2026-11-15",
     draft: false
@@ -272,7 +269,7 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 function dlButton(p, cls) {
   return p.download
     ? `<a class="btn primary ${cls || ""}" href="${esc(p.download)}" ${ON_SITE ? "download" : 'target="_blank" rel="noopener"'}>Download</a>`
-    : `<span class="btn primary" aria-disabled="true">링크 준비 중</span>`;
+    : `<span class="btn primary" aria-disabled="true">Coming soon</span>`;
 }
 
 function renderStats() {
@@ -292,19 +289,19 @@ function renderGrid() {
     (!q || (p.name + " " + p.desc + " " + p.tags.join(" ")).toLowerCase().includes(q)));
   $("#grid").innerHTML = list.length ? list.map((p) => `
     <article class="card">
-      <div class="preview" data-open="${p.id}" role="button" tabindex="0" aria-label="${esc(p.name)} 자세히 보기">
+      <div class="preview" data-open="${p.id}" role="button" tabindex="0" aria-label="View ${esc(p.name)} details">
         <img class="inv" src="${p.inv}" alt="${esc(p.name)} inventory preview" loading="lazy">
         <img class="hud" src="${p.hud}" alt="${esc(p.name)} hotbar preview" loading="lazy">
       </div>
       <div class="body">
         <div class="title-row"><h2>${esc(p.name)}</h2><span class="ver">${esc(p.version)}</span></div>
-        ${p.draft ? `<span class="draft">이름 · 정보 정리 중</span>` : ""}
+        ${p.draft ? `<span class="draft">Details coming soon</span>` : ""}
         <p class="desc">${esc(p.desc)}</p>
         <div class="tags">${p.tags.map((t) => `<span class="tag ${t === "Animated" ? "anim" : ""}">${t}</span>`).join("")}</div>
-        ${p.needs ? `<a class="mod" href="${esc(p.needsUrl)}" target="_blank" rel="noopener">필수 모드 · ${esc(p.needs)}</a>` : ""}
+        ${p.needs ? `<a class="mod" href="${esc(p.needsUrl)}" target="_blank" rel="noopener">Requires · ${esc(p.needs)}</a>` : ""}
         <div class="actions">${dlButton(p)}<button class="btn ghost" type="button" data-open="${p.id}">Details</button></div>
       </div>
-    </article>`).join("") : `<p class="empty">검색 결과가 없어요. No packs match.</p>`;
+    </article>`).join("") : `<p class="empty">No packs match your search.</p>`;
 }
 
 function openDetail(id, push) {
@@ -313,7 +310,7 @@ function openDetail(id, push) {
   $("#d-media").innerHTML = `<img class="inv" src="${p.inv}" alt="${esc(p.name)} inventory"><img src="${p.hud}" alt="${esc(p.name)} hotbar">`;
   const rows = [["Version", [p.version, p.format].filter(Boolean).join(" · ")], ["Animation", p.frames], ["Credits", p.credit], ["Added", p.added]]
     .filter((r) => r[1]).map((r) => `<dt>${r[0]}</dt><dd>${esc(r[1])}</dd>`).join("");
-  const req = p.needs ? `<dt>필수 모드</dt><dd><a href="${esc(p.needsUrl)}" target="_blank" rel="noopener">${esc(p.needs)}</a>${p.needsNote ? ` · ${esc(p.needsNote)}` : ""}</dd>` : "";
+  const req = p.needs ? `<dt>Required mod</dt><dd><a href="${esc(p.needsUrl)}" target="_blank" rel="noopener">${esc(p.needs)}</a>${p.needsNote ? ` · ${esc(p.needsNote)}` : ""}</dd>` : "";
   $("#d-body").innerHTML = `<h2 id="d-title">${esc(p.name)}</h2><p class="desc">${esc(p.desc)}</p>
     <div class="tags">${p.tags.map((t) => `<span class="tag ${t === "Animated" ? "anim" : ""}">${t}</span>`).join("")}</div>
     <dl>${req}${rows}</dl><div class="actions">${dlButton(p)}</div>`;
