@@ -138,6 +138,22 @@ dt { color: var(--ink-soft); }
 dd { margin: 0; }
 .close { position: absolute; top: 10px; right: 10px; width: 38px; height: 38px; border-radius: 50%; border: none; background: var(--paper); color: var(--navy); font-size: 20px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
 
+
+[hidden] { display: none !important; }
+#flake { cursor: default; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+.s-form { display: grid; gap: 8px; }
+.s-label { font-size: 14px; color: var(--ink-soft); }
+.s-row { display: flex; gap: 8px; }
+.s-row input { flex: 1; min-width: 0; font: inherit; color: var(--navy); padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--line); background: #fff; }
+.s-row .btn { flex: none; }
+.s-msg { margin: 0; min-height: 1.4em; font-size: 14px; color: var(--ink-soft); }
+.s-msg.err { color: #b4475c; }
+.s-list { display: grid; gap: 14px; }
+.s-item { display: grid; grid-template-columns: 120px 1fr; gap: 12px; align-items: start; border-top: 1.5px solid var(--line); padding-top: 14px; }
+.s-item img { width: 120px; border-radius: 8px; background: #3a4250; }
+.s-item h3 { font-family: var(--font-display); font-weight: 400; font-size: 20px; margin: 0 0 4px; }
+.s-item p { margin: 0 0 8px; font-size: 13.5px; color: var(--ink-soft); }
+@media (max-width: 420px) { .s-item { grid-template-columns: 1fr; } .s-item img { width: 100%; } }
 @media (max-width: 420px) {
   .grid { grid-template-columns: 1fr; }
   .avatar { width: 88px; height: 88px; }
@@ -194,12 +210,29 @@ dd { margin: 0; }
   </section>
 </main>
 
-<footer>made by Seolwoni ❄</footer>
+<footer>made by Seolwoni <span id="flake">❄</span></footer>
 
 <dialog id="detail" aria-labelledby="d-title">
   <button class="close" id="close" aria-label="Close">×</button>
   <div class="d-media" id="d-media"></div>
   <div class="d-body" id="d-body"></div>
+</dialog>
+
+
+<dialog id="secret" aria-labelledby="s-title">
+  <button class="close" id="s-close" aria-label="Close">×</button>
+  <div class="d-body">
+    <h2 id="s-title">❄</h2>
+    <form id="s-form" class="s-form" autocomplete="off">
+      <label for="s-pw" class="s-label">Password</label>
+      <div class="s-row">
+        <input id="s-pw" type="password" inputmode="text" autocapitalize="off" spellcheck="false">
+        <button class="btn primary" id="s-go" type="submit">Unlock</button>
+      </div>
+      <p class="s-msg" id="s-msg" aria-live="polite"></p>
+    </form>
+    <div id="s-list" class="s-list"></div>
+  </div>
 </dialog>
 
 <script>
@@ -484,6 +517,62 @@ $("#close").addEventListener("click", closeDetail);
 $("#detail").addEventListener("click", (e) => { if (e.target.id === "detail") closeDetail(); });
 $("#detail").addEventListener("close", () => { if (location.hash) history.replaceState(null, "", location.pathname + location.search); });
 window.addEventListener("hashchange", () => { const id = location.hash.slice(1); id ? openDetail(id, false) : closeDetail(); });
+
+
+/* ===== Hidden area: tap the footer snowflake 5 times ===== */
+(function () {
+  const flake = document.getElementById("flake"), dlg = document.getElementById("secret");
+  if (!flake || !dlg) return;
+  let taps = 0, timer = null, key = null, manifest = null;
+  flake.addEventListener("click", () => {
+    taps++; clearTimeout(timer); timer = setTimeout(() => (taps = 0), 2500);
+    if (taps >= 5) { taps = 0; if (!ON_SITE) return; dlg.showModal(); setTimeout(() => document.getElementById("s-pw").focus(), 50); }
+  });
+  document.getElementById("s-close").addEventListener("click", () => dlg.close());
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+  const msg = (t, err) => { const m = document.getElementById("s-msg"); m.textContent = t; m.classList.toggle("err", !!err); };
+  const fmt = (n) => (n / 1048576).toFixed(1) + " MB";
+  async function get(path) { const r = await fetch(path, { cache: "no-store" }); if (!r.ok) throw new Error("fetch"); return new Uint8Array(await r.arrayBuffer()); }
+  document.getElementById("s-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const pw = document.getElementById("s-pw").value;
+    if (!pw) return;
+    const go = document.getElementById("s-go"); go.disabled = true; msg("Checking…");
+    try {
+      const m = await get("packs/s/m.bin");
+      const salt = m.slice(0, 16), iv = m.slice(16, 28), ct = m.slice(28);
+      const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+      key = await crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 1000000, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+      manifest = JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ct)));
+      msg(""); document.getElementById("s-form").hidden = true; renderList();
+    } catch (err) {
+      key = null; msg(err.message === "fetch" ? "Couldn't load. Check your connection and try again." : "Wrong password. Try again.", true);
+    } finally { go.disabled = false; }
+  });
+  function renderList() {
+    const list = document.getElementById("s-list");
+    list.innerHTML = manifest.packs.map((p, i) => `
+      <div class="s-item">
+        ${p.preview ? `<img src="${p.preview}" alt="${esc(p.name)} preview">` : "<span></span>"}
+        <div><h3>${esc(p.name)}</h3><p>${esc(p.desc)}</p>
+        <button class="btn primary" type="button" data-s="${i}">Download · ${fmt(p.size)}</button></div>
+      </div>`).join("");
+  }
+  document.getElementById("s-list").addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-s]"); if (!b || !key) return;
+    const p = manifest.packs[+b.dataset.s]; const label = b.textContent;
+    b.disabled = true; b.textContent = "Preparing…";
+    try {
+      const d = await get(p.file);
+      const zip = await crypto.subtle.decrypt({ name: "AES-GCM", iv: d.slice(0, 12) }, key, d.slice(12));
+      const url = URL.createObjectURL(new Blob([zip], { type: "application/zip" }));
+      const a = document.createElement("a"); a.href = url; a.download = p.filename; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+      b.textContent = "Downloaded ✓";
+    } catch (err) { b.textContent = "Failed, tap to retry"; }
+    finally { b.disabled = false; setTimeout(() => { if (b.textContent !== label) b.textContent = label; }, 4000); }
+  });
+})();
 
 renderStats(); renderChips(); renderGrid();
 if (location.hash.length > 1) openDetail(location.hash.slice(1), false);
