@@ -74,6 +74,25 @@ header { padding: 40px 0 24px; position: relative; }
 }
 .kofi-foot:hover { color: var(--ink); }
 
+
+.kofi-float {
+  position: fixed; right: 18px; bottom: 18px; z-index: 30;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 15px; font-weight: 600; text-decoration: none;
+  color: #fff; background: var(--navy);
+  border-radius: 999px; padding: 11px 18px;
+  box-shadow: 0 6px 18px rgba(44,61,107,.28);
+  opacity: 0; transform: translateY(12px); pointer-events: none;
+  transition: opacity .2s, transform .2s;
+}
+.kofi-float.show { opacity: 1; transform: none; pointer-events: auto; }
+.kofi-float .ic { font-size: 18px; line-height: 1; }
+@media (max-width: 600px) {
+  .kofi-float { right: 14px; bottom: 14px; padding: 0; width: 52px; height: 52px; justify-content: center; }
+  .kofi-float .tx { display: none; }
+  .kofi-float .ic { font-size: 24px; }
+}
+
 /* toolbar */
 .toolbar {
   position: sticky; top: 0; z-index: 5;
@@ -105,7 +124,8 @@ input:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid 
   box-shadow: 0 8px 24px rgba(44,61,107,.10);
   display: flex; flex-direction: column;
 }
-.preview { background: #3a4250; padding: 14px; display: grid; gap: 10px; cursor: zoom-in; }
+.preview { position: relative; background: #3a4250; padding: 14px; display: grid; gap: 10px; cursor: zoom-in; }
+.new-badge { position: absolute; top: 10px; left: 10px; z-index: 2; background: var(--navy); color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .06em; padding: 5px 10px; border-radius: 999px; box-shadow: 0 3px 10px rgba(0,0,0,.25); pointer-events: none; }
 .preview .inv { aspect-ratio: 176 / 166; width: 100%; object-fit: contain; }
 .preview .hud { width: 100%; }
 .body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
@@ -645,14 +665,16 @@ function renderChips() {
     `<button class="chip" type="button" data-f="${f}" aria-pressed="${f === active}">${f}</button>`).join("");
 }
 
+const isNew = (p) => p.added && (Date.now() - Date.parse(p.added + "T00:00:00+09:00")) < 7 * 864e5;
 function renderGrid() {
   const q = $("#q").value.trim().toLowerCase();
-  const list = PACKS.filter((p) =>
+  const list = [...PACKS].sort((a, b) => (b.added || "").localeCompare(a.added || "")).filter((p) =>
     (active === "All" || p.tags.includes(active)) &&
     (!q || (p.name + " " + p.desc + " " + p.tags.join(" ")).toLowerCase().includes(q)));
   $("#grid").innerHTML = list.length ? list.map((p) => `
     <article class="card">
       <div class="preview" data-open="${p.id}" role="button" tabindex="0" aria-label="View ${esc(p.name)} details">
+        ${isNew(p) ? `<span class="new-badge">✨ NEW</span>` : ""}
         <img class="inv" src="${p.inv}" alt="${esc(p.name)} inventory preview" loading="lazy">
         <img class="hud" src="${p.hud}" alt="${esc(p.name)} hotbar preview" loading="lazy">
       </div>
@@ -761,6 +783,20 @@ window.addEventListener("hashchange", () => { const id = location.hash.slice(1);
 
 renderStats(); renderChips(); renderGrid();
 if (location.hash.length > 1) openDetail(location.hash.slice(1), false);
+</script>
+<a class="kofi-float" id="kofi-float" href="https://ko-fi.com/seolwoni" target="_blank" rel="noopener" aria-label="Support &amp; Commissions on Ko-fi"><span class="ic">☕</span><span class="tx">Support &amp; Commissions</span></a>
+<script>
+(() => {
+  const f = document.getElementById("kofi-float");
+  const top = document.querySelector("header .kofi"), foot = document.querySelector("footer .kofi-foot");
+  if (!f || !("IntersectionObserver" in window)) { if (f) f.classList.add("show"); return; }
+  const seen = new Map();
+  const io = new IntersectionObserver((es) => {
+    es.forEach(e => seen.set(e.target, e.isIntersecting));
+    f.classList.toggle("show", ![...seen.values()].some(Boolean));
+  });
+  [top, foot].forEach(el => { if (el) { seen.set(el, true); io.observe(el); } });
+})();
 </script>
 </body>
 </html>
