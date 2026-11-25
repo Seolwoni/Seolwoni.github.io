@@ -42,7 +42,17 @@ img { max-width: 100%; display: block; image-rendering: auto; }
 .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
 
 /* header */
-header { padding: 40px 0 24px; }
+header { padding: 40px 0 24px; position: relative; }
+.kofi {
+  position: absolute; top: 14px; right: 20px;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 15px; font-weight: 600; text-decoration: none;
+  color: var(--ink-soft); background: var(--paper);
+  border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px;
+  box-shadow: 0 2px 8px rgba(44,61,107,.08);
+  transition: transform .15s, box-shadow .15s;
+}
+.kofi:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(44,61,107,.14); color: var(--ink); }
 .profile { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
 .avatar {
   width: 112px; height: 112px; border-radius: 50%; flex: none;
@@ -55,6 +65,14 @@ header { padding: 40px 0 24px; }
 .who p { margin: 6px 0 0; color: var(--ink-soft); max-width: 60ch; }
 .stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 .stat { font-family: var(--font-pixel); font-size: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 3px 9px; font-variant-numeric: tabular-nums; }
+
+.kofi-foot {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 14px; font-weight: 600; text-decoration: none;
+  color: var(--ink-soft); background: var(--paper);
+  border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px;
+}
+.kofi-foot:hover { color: var(--ink); }
 
 /* toolbar */
 .toolbar {
@@ -172,6 +190,7 @@ footer { display: flex; flex-direction: column; align-items: center; gap: 6px; }
   <button class="btn primary" id="inapp-copy" type="button">Copy site link</button>
 </div>
 <header class="wrap">
+  <a class="kofi" href="https://ko-fi.com/seolwoni" target="_blank" rel="noopener">☕ Support &amp; Commissions</a>
   <div class="profile">
     <div class="avatar"><img src="assets/avatar.webp" alt="Seolwoni profile character"></div>
     <div class="who">
@@ -219,7 +238,7 @@ footer { display: flex; flex-direction: column; align-items: center; gap: 6px; }
   </section>
 </main>
 
-<footer><span>made by Seolwoni</span><span id="flake" aria-hidden="true">❄️</span></footer>
+<footer><span>made by Seolwoni</span><a class="kofi-foot" href="https://ko-fi.com/seolwoni" target="_blank" rel="noopener">☕ Support &amp; Commissions</a><span id="flake" aria-hidden="true">❄️</span></footer>
 
 <dialog id="detail" aria-labelledby="d-title">
   <button class="close" id="close" aria-label="Close">×</button>
