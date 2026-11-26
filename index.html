@@ -841,21 +841,38 @@ if (location.hash.length > 1) openDetail(location.hash.slice(1), false);
     const n = counts[el.dataset.dlc] || 0, t = n >= MIN_SHOW ? fmt(n) : "";
     if (el.textContent !== t) el.textContent = t;
   });
+  // Last known counts are kept in this browser for 10 minutes, so reloads show numbers at once
+  // and do not hit the counter service again (it allows about 30 requests per 10 seconds per visitor).
+  const CACHE = "dlCounts", TTL = 10 * 60 * 1000;
+  let cache = null; try { cache = JSON.parse(localStorage.getItem(CACHE) || "null"); } catch (e) {}
+  if (cache && cache.counts) Object.assign(counts, cache.counts);
+  const save = () => { try { localStorage.setItem(CACHE, JSON.stringify({ t: Date.now(), counts })); } catch (e) {} };
+  let blocked = false, gotAny = false;
   const get = async (id) => {
+    if (blocked) return;
     try {
-      const ctl = new AbortController(); setTimeout(() => ctl.abort(), 4000);
+      const ctl = new AbortController(); setTimeout(() => ctl.abort(), 5000);
       const r = await fetch(`${API}/get/${NS}/${encodeURIComponent(key(id))}`, { signal: ctl.signal });
-      if (r.ok) { const j = await r.json(); counts[id] = Number(j.value) || 0; }
+      if (r.status === 429) { blocked = true; return; }
+      if (r.ok) { const j = await r.json(); counts[id] = Number(j.value) || 0; gotAny = true; paint(); }
     } catch (e) {}
   };
-  if (typeof PACKS !== "undefined") Promise.all(PACKS.filter((p) => p.download).map((p) => get(p.id))).then(paint);
+  const fresh = cache && cache.t && Date.now() - cache.t < TTL;
+  if (typeof PACKS !== "undefined" && !fresh) {
+    const ids = PACKS.filter((p) => p.download).map((p) => p.id);
+    (async () => {  // 4 at a time, so a visit never bursts past the service's limit
+      for (let i = 0; i < ids.length && !blocked; i += 4) await Promise.all(ids.slice(i, i + 4).map(get));
+      if (!blocked && gotAny) save();
+    })();
+  }
+  paint();
   const mo = new MutationObserver((ms) => { if (ms.some((m) => !(m.target.matches && m.target.matches("[data-dlc]")))) paint(); });
   ["grid", "d-body"].forEach((id) => { const el = document.getElementById(id); if (el) mo.observe(el, { childList: true, subtree: true }); });
   document.addEventListener("click", (e) => {
     const a = e.target.closest && e.target.closest("a[data-dl]"); if (!a) return;
     const id = a.dataset.dl;
     try { fetch(`${API}/hit/${NS}/${encodeURIComponent(key(id))}`, { keepalive: true, mode: "cors" }).catch(() => {}); } catch (e) {}
-    counts[id] = (counts[id] || 0) + 1; paint();
+    counts[id] = (counts[id] || 0) + 1; paint(); save();
   }, true);
 })();
 </script>
