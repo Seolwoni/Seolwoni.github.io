@@ -93,6 +93,10 @@ header { padding: 40px 0 24px; position: relative; }
   .kofi-float .ic { font-size: 24px; }
 }
 
+
+.dlc:not(:empty) { margin-left: 7px; font-size: 13px; font-weight: 600; opacity: .8; }
+.dlc:not(:empty)::before { content: "· ⬇ "; }
+
 /* toolbar */
 .toolbar {
   position: sticky; top: 0; z-index: 5;
@@ -651,7 +655,7 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 
 function dlButton(p, cls) {
   return p.download
-    ? `<a class="btn primary ${cls || ""}" href="${esc(p.download)}" ${ON_SITE && !IN_APP ? "download" : 'target="_blank" rel="noopener"'}>Download</a>`
+    ? `<a class="btn primary ${cls || ""}" data-dl="${esc(p.id)}" href="${esc(p.download)}" ${ON_SITE && !IN_APP ? "download" : 'target="_blank" rel="noopener"'}>Download<span class="dlc" data-dlc="${esc(p.id)}"></span></a>`
     : `<span class="btn primary" aria-disabled="true">Coming soon</span>`;
 }
 
@@ -796,6 +800,34 @@ if (location.hash.length > 1) openDetail(location.hash.slice(1), false);
     f.classList.toggle("show", ![...seen.values()].some(Boolean));
   });
   [top, foot].forEach(el => { if (el) { seen.set(el, true); io.observe(el); } });
+})();
+</script>
+<script>
+/* download counter: public click counts via abacus.jasoncameron.dev. Failures are silent; downloads never depend on it. */
+(() => {
+  const NS = "seolwoni-packlib", API = "https://abacus.jasoncameron.dev", MIN_SHOW = 10;
+  const counts = {};
+  const fmt = (n) => n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, "") + "k" : String(n);
+  const paint = () => document.querySelectorAll("[data-dlc]").forEach((el) => {
+    const n = counts[el.dataset.dlc] || 0, t = n >= MIN_SHOW ? fmt(n) : "";
+    if (el.textContent !== t) el.textContent = t;
+  });
+  const get = async (id) => {
+    try {
+      const ctl = new AbortController(); setTimeout(() => ctl.abort(), 4000);
+      const r = await fetch(`${API}/get/${NS}/${encodeURIComponent(id)}`, { signal: ctl.signal });
+      if (r.ok) { const j = await r.json(); counts[id] = Number(j.value) || 0; }
+    } catch (e) {}
+  };
+  if (typeof PACKS !== "undefined") Promise.all(PACKS.filter((p) => p.download).map((p) => get(p.id))).then(paint);
+  const mo = new MutationObserver((ms) => { if (ms.some((m) => !(m.target.matches && m.target.matches("[data-dlc]")))) paint(); });
+  ["grid", "d-body"].forEach((id) => { const el = document.getElementById(id); if (el) mo.observe(el, { childList: true, subtree: true }); });
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest && e.target.closest("a[data-dl]"); if (!a) return;
+    const id = a.dataset.dl;
+    try { fetch(`${API}/hit/${NS}/${encodeURIComponent(id)}`, { keepalive: true, mode: "cors" }).catch(() => {}); } catch (e) {}
+    counts[id] = (counts[id] || 0) + 1; paint();
+  }, true);
 })();
 </script>
 </body>
