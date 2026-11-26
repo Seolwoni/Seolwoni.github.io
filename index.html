@@ -807,6 +807,8 @@ if (location.hash.length > 1) openDetail(location.hash.slice(1), false);
 (() => {
   const NS = "seolwoni-packlib", API = "https://abacus.jasoncameron.dev", MIN_SHOW = 10;
   const counts = {};
+  // abacus keys must be 3+ characters, so short pack ids get a prefix
+  const key = (id) => id.length >= 3 ? id : "pack-" + id;
   const fmt = (n) => n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, "") + "k" : String(n);
   const paint = () => document.querySelectorAll("[data-dlc]").forEach((el) => {
     const n = counts[el.dataset.dlc] || 0, t = n >= MIN_SHOW ? fmt(n) : "";
@@ -815,7 +817,7 @@ if (location.hash.length > 1) openDetail(location.hash.slice(1), false);
   const get = async (id) => {
     try {
       const ctl = new AbortController(); setTimeout(() => ctl.abort(), 4000);
-      const r = await fetch(`${API}/get/${NS}/${encodeURIComponent(id)}`, { signal: ctl.signal });
+      const r = await fetch(`${API}/get/${NS}/${encodeURIComponent(key(id))}`, { signal: ctl.signal });
       if (r.ok) { const j = await r.json(); counts[id] = Number(j.value) || 0; }
     } catch (e) {}
   };
@@ -825,7 +827,7 @@ if (location.hash.length > 1) openDetail(location.hash.slice(1), false);
   document.addEventListener("click", (e) => {
     const a = e.target.closest && e.target.closest("a[data-dl]"); if (!a) return;
     const id = a.dataset.dl;
-    try { fetch(`${API}/hit/${NS}/${encodeURIComponent(id)}`, { keepalive: true, mode: "cors" }).catch(() => {}); } catch (e) {}
+    try { fetch(`${API}/hit/${NS}/${encodeURIComponent(key(id))}`, { keepalive: true, mode: "cors" }).catch(() => {}); } catch (e) {}
     counts[id] = (counts[id] || 0) + 1; paint();
   }, true);
 })();
