@@ -129,6 +129,7 @@ input:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid 
   display: flex; flex-direction: column;
 }
 .preview { position: relative; background: #3a4250; padding: 14px; display: grid; gap: 10px; cursor: zoom-in; }
+.pop-badge { position: absolute; left: 10px; z-index: 2; background: #e2564f; color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .06em; padding: 5px 10px; border-radius: 999px; box-shadow: 0 3px 10px rgba(0,0,0,.25); pointer-events: none; }
 .new-badge { position: absolute; top: 10px; left: 10px; z-index: 2; background: var(--navy); color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .06em; padding: 5px 10px; border-radius: 999px; box-shadow: 0 3px 10px rgba(0,0,0,.25); pointer-events: none; }
 .preview .inv { aspect-ratio: 176 / 166; width: 100%; object-fit: contain; }
 .preview .hud { width: 100%; }
@@ -837,10 +838,26 @@ if (location.hash.length > 1) openDetail(location.hash.slice(1), false);
   // abacus keys must be 3+ characters, so short pack ids get a prefix
   const key = (id) => id.length >= 3 ? id : "pack-" + id;
   const fmt = (n) => n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, "") + "k" : String(n);
-  const paint = () => document.querySelectorAll("[data-dlc]").forEach((el) => {
-    const n = counts[el.dataset.dlc] || 0, t = n >= MIN_SHOW ? fmt(n) : "";
-    if (el.textContent !== t) el.textContent = t;
-  });
+  // the 3 most downloaded packs (at least MIN_SHOW downloads) get a POPULAR badge on their card
+  const POP_TOP = 3;
+  const paintPopular = () => {
+    const top = Object.keys(counts).filter((id) => counts[id] >= MIN_SHOW)
+      .sort((a, b) => counts[b] - counts[a]).slice(0, POP_TOP);
+    document.querySelectorAll("#grid .preview[data-open]").forEach((pv) => {
+      const want = top.includes(pv.dataset.open), have = pv.querySelector(".pop-badge");
+      if (want && !have) {
+        const s = document.createElement("span"); s.className = "pop-badge"; s.textContent = "🔥 POPULAR";
+        s.style.top = pv.querySelector(".new-badge") ? "46px" : "10px"; pv.prepend(s);
+      } else if (!want && have) have.remove();
+    });
+  };
+  const paint = () => {
+    document.querySelectorAll("[data-dlc]").forEach((el) => {
+      const n = counts[el.dataset.dlc] || 0, t = n >= MIN_SHOW ? fmt(n) : "";
+      if (el.textContent !== t) el.textContent = t;
+    });
+    paintPopular();
+  };
   // Last known counts are kept in this browser for 10 minutes, so reloads show numbers at once
   // and do not hit the counter service again (it allows about 30 requests per 10 seconds per visitor).
   const CACHE = "dlCounts", TTL = 10 * 60 * 1000;
@@ -866,7 +883,8 @@ if (location.hash.length > 1) openDetail(location.hash.slice(1), false);
     })();
   }
   paint();
-  const mo = new MutationObserver((ms) => { if (ms.some((m) => !(m.target.matches && m.target.matches("[data-dlc]")))) paint(); });
+  const mine = (n) => n.nodeType === 1 && (n.matches("[data-dlc]") || n.classList.contains("pop-badge"));
+  const mo = new MutationObserver((ms) => { if (ms.some((m) => !mine(m.target) && ![...m.addedNodes, ...m.removedNodes].every(mine))) paint(); });
   ["grid", "d-body"].forEach((id) => { const el = document.getElementById(id); if (el) mo.observe(el, { childList: true, subtree: true }); });
   document.addEventListener("click", (e) => {
     const a = e.target.closest && e.target.closest("a[data-dl]"); if (!a) return;
